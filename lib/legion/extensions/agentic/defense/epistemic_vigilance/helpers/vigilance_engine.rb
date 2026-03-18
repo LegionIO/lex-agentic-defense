@@ -74,6 +74,8 @@ module Legion
               end
 
               def adjudicate_claim(claim_id:, verdict:)
+                return nil unless CLAIM_VERDICTS.include?(verdict.to_sym)
+
                 claim  = @claims[claim_id]
                 source = claim && @sources[claim.source_id]
                 return { error: :claim_not_found } unless claim

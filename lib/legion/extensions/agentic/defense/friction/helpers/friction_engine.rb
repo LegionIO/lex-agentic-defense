@@ -16,24 +16,34 @@ module Legion
               end
 
               def set_current_state(state:)
+                return nil unless STATE_TYPES.include?(state.to_sym)
+
                 @current_state = state.to_sym
               end
 
               attr_reader :current_state
 
               def set_friction(from_state:, to_state:, friction:)
+                return nil unless STATE_TYPES.include?(from_state.to_sym)
+                return nil unless STATE_TYPES.include?(to_state.to_sym)
+
                 key = :"#{from_state}_to_#{to_state}"
                 @friction_map[key] = friction.to_f.clamp(0.0, 1.0)
               end
 
               def get_friction(from_state:, to_state:)
+                return nil unless STATE_TYPES.include?(from_state.to_sym)
+                return nil unless STATE_TYPES.include?(to_state.to_sym)
+
                 key = :"#{from_state}_to_#{to_state}"
                 @friction_map.fetch(key, DEFAULT_FRICTION)
               end
 
               def attempt_transition(to_state:, force: 0.5)
+                return nil unless STATE_TYPES.include?(to_state.to_sym)
+
                 prune_if_needed
-                friction = get_friction(from_state: @current_state, to_state: to_state)
+                friction = get_friction(from_state: @current_state, to_state: to_state) || DEFAULT_FRICTION
                 transition = StateTransition.new(
                   from_state: @current_state,
                   to_state:   to_state,
@@ -46,8 +56,10 @@ module Legion
               end
 
               def force_transition(to_state:)
+                return nil unless STATE_TYPES.include?(to_state.to_sym)
+
                 prune_if_needed
-                friction = get_friction(from_state: @current_state, to_state: to_state)
+                friction = get_friction(from_state: @current_state, to_state: to_state) || DEFAULT_FRICTION
                 transition = StateTransition.new(
                   from_state: @current_state,
                   to_state:   to_state,

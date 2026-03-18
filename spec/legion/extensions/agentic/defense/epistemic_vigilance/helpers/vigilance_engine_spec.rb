@@ -149,6 +149,20 @@ RSpec.describe Legion::Extensions::Agentic::Defense::EpistemicVigilance::Helpers
       after = engine.source_reliability(source_id: source_id)[:reliability]
       expect(after).to be < before
     end
+
+    it 'returns nil for an invalid verdict' do
+      result = engine.adjudicate_claim(claim_id: claim_id, verdict: :bogus_verdict)
+      expect(result).to be_nil
+    end
+
+    it 'accepts all valid CLAIM_VERDICTS' do
+      verdicts = Legion::Extensions::Agentic::Defense::EpistemicVigilance::Helpers::Constants::CLAIM_VERDICTS
+      verdicts.each do |v|
+        cid = engine.submit_claim(content: "claim_#{v}", source_id: source_id, domain: :science)[:claim][:id]
+        result = engine.adjudicate_claim(claim_id: cid, verdict: v)
+        expect(result[:verdict]).to eq(v)
+      end
+    end
   end
 
   describe '#source_reliability' do
