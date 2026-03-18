@@ -16,6 +16,8 @@ module Legion
               end
 
               def register_antigen(pattern:, antigen_type:, threat_level: DEFAULT_THREAT_LEVEL)
+                return nil unless ANTIGEN_TYPES.include?(antigen_type.to_sym)
+
                 prune_antigens
                 antigen = Antigen.new(
                   pattern: pattern, antigen_type: antigen_type, threat_level: threat_level
@@ -38,6 +40,8 @@ module Legion
               end
 
               def create_antibody(antigen_type:, signature:, immunity_level: 0.3)
+                return nil unless ANTIGEN_TYPES.include?(antigen_type.to_sym)
+
                 prune_antibodies
                 antibody = Antibody.new(
                   antigen_type: antigen_type, signature: signature, immunity_level: immunity_level

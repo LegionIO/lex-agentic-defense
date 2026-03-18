@@ -36,6 +36,19 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Immunology::Helpers::Immune
       engine.detect_threat(source: 's2', tactic: :strawman, content_hash: 'b')
       expect(engine.to_h[:threat_count]).to eq(2)
     end
+
+    it 'rejects invalid tactic' do
+      result = engine.detect_threat(source: 'user', tactic: :nonexistent_tactic, content_hash: 'h1')
+      expect(result).to be_nil
+    end
+
+    it 'accepts all MANIPULATION_TACTICS' do
+      constants = Legion::Extensions::Agentic::Defense::Immunology::Helpers::Constants::MANIPULATION_TACTICS
+      constants.each do |val|
+        result = engine.detect_threat(source: 'user', tactic: val, content_hash: "hash_#{val}")
+        expect(result).not_to be_nil, "Expected #{val.inspect} to be accepted"
+      end
+    end
   end
 
   describe '#quarantine_threat' do
@@ -113,6 +126,19 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Immunology::Helpers::Immune
     it 'accepts custom strength' do
       ab = engine.create_antibody(tactic: :gaslighting, pattern: 'test', strength: 0.8)
       expect(ab.strength).to eq(0.8)
+    end
+
+    it 'rejects invalid tactic' do
+      result = engine.create_antibody(tactic: :nonexistent_tactic, pattern: 'test')
+      expect(result).to be_nil
+    end
+
+    it 'accepts all MANIPULATION_TACTICS' do
+      constants = Legion::Extensions::Agentic::Defense::Immunology::Helpers::Constants::MANIPULATION_TACTICS
+      constants.each do |val|
+        result = engine.create_antibody(tactic: val, pattern: "pattern_#{val}")
+        expect(result).not_to be_nil, "Expected #{val.inspect} to be accepted"
+      end
     end
   end
 

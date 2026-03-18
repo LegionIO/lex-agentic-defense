@@ -17,6 +17,8 @@ module Legion
               end
 
               def detect_threat(source:, tactic:, content_hash:, threat_level: 0.5)
+                return nil unless Constants::MANIPULATION_TACTICS.include?(tactic.to_sym)
+
                 prune_threats_if_full
 
                 threat = Threat.new(
@@ -68,6 +70,8 @@ module Legion
               end
 
               def create_antibody(tactic:, pattern:, strength: 0.5)
+                return nil unless Constants::MANIPULATION_TACTICS.include?(tactic.to_sym)
+
                 prune_antibodies_if_full
 
                 ab = Antibody.new(tactic: tactic, pattern: pattern, strength: strength)

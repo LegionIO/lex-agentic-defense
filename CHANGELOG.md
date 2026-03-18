@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-03-18
+
+### Changed
+- Enforce ANTIGEN_TYPES at ImmuneResponse::ImmuneEngine method boundaries: `register_antigen` and `create_antibody` return nil for invalid antigen_type values (v0.1.1)
+- Enforce MANIPULATION_TACTICS at Immunology::ImmuneEngine method boundaries: `detect_threat` and `create_antibody` return nil for invalid tactic values (v0.1.1)
+- Added 8 new enum validation specs (2 per enforced constant)
+
 ## [0.1.1] - 2026-03-18
 
 ### Changed

@@ -15,6 +15,19 @@ RSpec.describe Legion::Extensions::Agentic::Defense::ImmuneResponse::Helpers::Im
       ag = engine.register_antigen(pattern: 'test', antigen_type: :data_poisoning)
       expect(engine.most_threatening.map(&:id)).to include(ag.id)
     end
+
+    it 'rejects invalid antigen_type' do
+      result = engine.register_antigen(pattern: 'test', antigen_type: :nonexistent_threat)
+      expect(result).to be_nil
+    end
+
+    it 'accepts all ANTIGEN_TYPES' do
+      constants = Legion::Extensions::Agentic::Defense::ImmuneResponse::Helpers::Constants::ANTIGEN_TYPES
+      constants.each do |val|
+        result = engine.register_antigen(pattern: 'test', antigen_type: val)
+        expect(result).not_to be_nil, "Expected #{val.inspect} to be accepted"
+      end
+    end
   end
 
   describe '#encounter' do
@@ -51,6 +64,19 @@ RSpec.describe Legion::Extensions::Agentic::Defense::ImmuneResponse::Helpers::Im
     it 'creates an antibody' do
       ab = engine.create_antibody(antigen_type: :prompt_injection, signature: 'test')
       expect(ab).to be_a(Legion::Extensions::Agentic::Defense::ImmuneResponse::Helpers::Antibody)
+    end
+
+    it 'rejects invalid antigen_type' do
+      result = engine.create_antibody(antigen_type: :nonexistent_threat, signature: 'test')
+      expect(result).to be_nil
+    end
+
+    it 'accepts all ANTIGEN_TYPES' do
+      constants = Legion::Extensions::Agentic::Defense::ImmuneResponse::Helpers::Constants::ANTIGEN_TYPES
+      constants.each do |val|
+        result = engine.create_antibody(antigen_type: val, signature: 'test')
+        expect(result).not_to be_nil, "Expected #{val.inspect} to be accepted"
+      end
     end
   end
 
