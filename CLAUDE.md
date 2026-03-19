@@ -32,6 +32,10 @@ Domain consolidation gem for cognitive defense, immunity, and error management. 
 
 ## Actors
 
+- `Defense::Bias::Actors::Update` — interval actor, updates bias calibration state
+- `Defense::Confabulation::Actors::Decay` — interval actor, decays confabulation detections
+- `Defense::EpistemicVigilance::Actors::Update` — interval actor, updates vigilance baseline
+- `Defense::ErrorMonitoring::Actors::Tick` — interval actor, runs error monitoring tick
 - `Defense::Extinction::Actors::ProtocolMonitor` — runs every 300s, monitors containment protocol state
 
 ## Key Architecture
@@ -42,6 +46,6 @@ Domain consolidation gem for cognitive defense, immunity, and error management. 
 
 ```bash
 bundle install
-bundle exec rspec        # 1712 examples, 0 failures
+bundle exec rspec        # 1711 examples, 0 failures
 bundle exec rubocop      # 0 offenses
 ```

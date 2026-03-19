@@ -5,7 +5,7 @@ Domain consolidation gem for cognitive defense, immunity, and error management. 
 ## Overview
 
 **Gem**: `lex-agentic-defense`
-**Version**: 0.1.0
+**Version**: 0.1.2
 **Namespace**: `Legion::Extensions::Agentic::Defense`
 
 ## Sub-Modules
@@ -30,6 +30,10 @@ Domain consolidation gem for cognitive defense, immunity, and error management. 
 
 ## Actors
 
+- `Defense::Bias::Actors::Update` — interval actor, updates bias calibration state
+- `Defense::Confabulation::Actors::Decay` — interval actor, decays confabulation detections
+- `Defense::EpistemicVigilance::Actors::Update` — interval actor, updates vigilance baseline
+- `Defense::ErrorMonitoring::Actors::Tick` — interval actor, runs error monitoring tick
 - `Defense::Extinction::Actors::ProtocolMonitor` — runs every 300s, monitors containment protocol state
 
 ## Installation
@@ -42,7 +46,7 @@ gem 'lex-agentic-defense'
 
 ```bash
 bundle install
-bundle exec rspec        # 1696 examples, 0 failures
+bundle exec rspec        # 1711 examples, 0 failures
 bundle exec rubocop      # 0 offenses
 ```
 
