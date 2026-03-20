@@ -46,7 +46,7 @@ gem 'lex-agentic-defense'
 
 ```bash
 bundle install
-bundle exec rspec        # 1711 examples, 0 failures
+bundle exec rspec        # 1706 examples, 0 failures
 bundle exec rubocop      # 0 offenses
 ```
 
