@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-03-21
+
+### Added
+- Right-to-erasure propagation from extinction level 4 to Apollo knowledge store
+- Apollo erasure wired in enforce_escalation_effects (delete non-confirmed, redact confirmed)
+
+### Changed
+- enforce_escalation_effects restructured: DigitalWorker termination uses if-block instead of early return
+
 ## [0.1.2] - 2026-03-18
 
 ### Changed

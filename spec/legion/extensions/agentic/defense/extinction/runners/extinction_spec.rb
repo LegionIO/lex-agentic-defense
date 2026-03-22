@@ -80,6 +80,26 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Extinction::Runners::Extinc
       expect(pc_mod).to receive(:erase_all)
       client.escalate(level: 4, authority: :physical_keyholders, reason: 'final')
     end
+
+    it 'propagates Apollo erasure on level 4' do
+      events = Module.new { def self.emit(*, **); end }
+      stub_const('Legion::Events', events)
+      pc_mod = Module.new { def self.erase_all; end }
+      stub_const('Legion::Extensions::Privatecore::Runners::Privatecore', pc_mod)
+
+      apollo_runner = Module.new do
+        def handle_erasure_request(agent_id:, **)
+          { deleted: 1, redacted: 0, agent_id: agent_id }
+        end
+      end
+      stub_const('Legion::Extensions::Apollo::Runners::Knowledge', apollo_runner)
+
+      client.escalate(level: 1, authority: :governance_council, reason: 's1')
+      client.escalate(level: 2, authority: :governance_council, reason: 's2')
+      client.escalate(level: 3, authority: :council_plus_executive, reason: 's3')
+      result = client.escalate(level: 4, authority: :physical_keyholders, reason: 'final')
+      expect(result[:escalated]).to be true
+    end
   end
 
   describe '#monitor_protocol' do

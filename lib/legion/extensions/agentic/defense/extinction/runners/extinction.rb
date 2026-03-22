@@ -84,16 +84,26 @@ module Legion
                   Legion::Logging.warn '[extinction] cryptographic erasure triggered'
                 end
 
-                return unless defined?(Legion::Data::Model::DigitalWorker)
+                if defined?(Legion::Data::Model::DigitalWorker)
+                  begin
+                    Legion::Data::Model::DigitalWorker.where(lifecycle_state: 'active').update(
+                      lifecycle_state: 'terminated', updated_at: Time.now.utc
+                    )
+                  rescue StandardError
+                    nil
+                  end
+                  Legion::Logging.warn '[extinction] all active workers terminated'
+                end
+
+                return unless defined?(Legion::Extensions::Apollo::Runners::Knowledge)
 
                 begin
-                  Legion::Data::Model::DigitalWorker.where(lifecycle_state: 'active').update(
-                    lifecycle_state: 'terminated', updated_at: Time.now.utc
-                  )
-                rescue StandardError
-                  nil
+                  obj = Object.new.extend(Legion::Extensions::Apollo::Runners::Knowledge)
+                  obj.handle_erasure_request(agent_id: 'system:extinction')
+                  Legion::Logging.warn '[extinction] apollo erasure propagated'
+                rescue StandardError => e
+                  Legion::Logging.error "[extinction] apollo erasure failed: #{e.message}"
                 end
-                Legion::Logging.warn '[extinction] all active workers terminated'
               end
 
               def emit_escalation_event(level, authority, reason)
