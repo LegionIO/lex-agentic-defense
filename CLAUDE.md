@@ -7,7 +7,7 @@
 Domain consolidation gem for cognitive defense, immunity, and error management. Bundles 15 source extensions into one loadable unit under `Legion::Extensions::Agentic::Defense`.
 
 **Gem**: `lex-agentic-defense`
-**Version**: 0.1.2
+**Version**: 0.1.5
 **Namespace**: `Legion::Extensions::Agentic::Defense`
 
 ## Sub-Modules
@@ -46,6 +46,6 @@ Domain consolidation gem for cognitive defense, immunity, and error management. 
 
 ```bash
 bundle install
-bundle exec rspec        # 1706 examples, 0 failures
+bundle exec rspec        # 1713 examples, 0 failures
 bundle exec rubocop      # 0 offenses
 ```

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-03-22
+
+### Changed
+- Add 7 runtime sub-gem dependencies to gemspec: legion-cache, legion-crypt, legion-data, legion-json, legion-logging, legion-settings, legion-transport
+- Update spec_helper to require real sub-gem helpers and build Helpers::Lex from them (replaces inline stubs)
+- Bump rubocop dev dependency to ~> 1.75
+
 ## [0.1.3] - 2026-03-21
 
 ### Added
