@@ -24,7 +24,7 @@ module Legion
                 [(0.6...0.8),  :chest_deep],
                 [(0.4...0.6),  :waist_deep],
                 [(0.2...0.4),  :ankle_deep],
-                [(..0.2),      :surface]
+                [..0.2,        :surface]
               ].freeze
 
               VISCOSITY_LABELS = [
@@ -32,7 +32,7 @@ module Legion
                 [(0.6...0.8),  :thick],
                 [(0.4...0.6),  :moderate],
                 [(0.2...0.4),  :thin],
-                [(..0.2),      :dry]
+                [..0.2,        :dry]
               ].freeze
 
               def self.label_for(table, value)
