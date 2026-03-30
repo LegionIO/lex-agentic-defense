@@ -8,7 +8,7 @@ module Legion
       module Defense
         module Extinction
           module Actor
-            class ProtocolMonitor < Legion::Extensions::Actors::Every
+            class ProtocolMonitor < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
               def runner_class
                 Legion::Extensions::Agentic::Defense::Extinction::Runners::Extinction
               end

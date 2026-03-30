@@ -8,7 +8,7 @@ module Legion
       module Defense
         module Bias
           module Actor
-            class Update < Legion::Extensions::Actors::Every
+            class Update < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
               def runner_class
                 Legion::Extensions::Agentic::Defense::Bias::Runners::Bias
               end

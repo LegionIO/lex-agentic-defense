@@ -19,30 +19,30 @@ module Legion
                   content:       content,
                   resistance:    resistance
                 )
-                Legion::Logging.debug "[cognitive_erosion] formation created: #{result[:formation_id]}" if result[:success]
+                log.debug("[cognitive_erosion] formation created: #{result[:formation_id]}") if result[:success]
                 result
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_erosion] create_formation failed: #{e.message}"
+                log.warn("[cognitive_erosion] create_formation failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
               def erode(formation_id:, agent:, force:, engine: nil, **)
                 eng = engine || default_engine
                 result = eng.erode(formation_id: formation_id, agent: agent, force: force)
-                Legion::Logging.debug "[cognitive_erosion] eroded #{formation_id[0..7]} agent=#{agent} force=#{force.round(3)}" if result[:success]
+                log.debug("[cognitive_erosion] eroded #{formation_id[0..7]} agent=#{agent} force=#{force.round(3)}") if result[:success]
                 result
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_erosion] erode failed: #{e.message}"
+                log.warn("[cognitive_erosion] erode failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
               def weather_all(force: 0.05, agent: :wind, engine: nil, **)
                 eng = engine || default_engine
                 result = eng.weather_all!(force: force, agent: agent)
-                Legion::Logging.debug "[cognitive_erosion] weather_all: #{result[:weathered]} formations weathered" if result[:success]
+                log.debug("[cognitive_erosion] weather_all: #{result[:weathered]} formations weathered") if result[:success]
                 result
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_erosion] weather_all failed: #{e.message}"
+                log.warn("[cognitive_erosion] weather_all failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
@@ -65,8 +65,8 @@ module Legion
               def erosion_report(engine: nil, **)
                 eng = engine || default_engine
                 result = eng.erosion_report
-                Legion::Logging.debug "[cognitive_erosion] report: formations=#{result[:total_formations]} " \
-                                      "channels=#{result[:total_channels]} canyons=#{result[:canyons]}"
+                log.debug("[cognitive_erosion] report: formations=#{result[:total_formations]} " \
+                          "channels=#{result[:total_channels]} canyons=#{result[:canyons]}")
                 result
               rescue ArgumentError => e
                 { success: false, error: e.message }
