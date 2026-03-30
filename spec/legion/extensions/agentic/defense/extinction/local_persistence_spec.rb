@@ -16,7 +16,7 @@ module Legion
   module Data
     module Local
       class << self
-        attr_accessor :_connection, :_connected
+        attr_accessor :_connection, :_connected # rubocop:disable ThreadSafety/ClassAndModuleAttributes
 
         def connection
           _connection

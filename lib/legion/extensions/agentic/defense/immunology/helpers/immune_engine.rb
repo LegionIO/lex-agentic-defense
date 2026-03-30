@@ -7,6 +7,8 @@ module Legion
         module Immunology
           module Helpers
             class ImmuneEngine
+              include Legion::Extensions::Helpers::Lex
+
               attr_reader :resistance, :inflammatory
 
               def initialize
@@ -36,7 +38,7 @@ module Legion
                 end
 
                 @threats[threat.id] = threat
-                Legion::Logging.debug "[cognitive_immunology] threat detected: id=#{threat.id} tactic=#{tactic} level=#{threat.threat_level.round(2)}"
+                log.debug("[cognitive_immunology] threat detected: id=#{threat.id} tactic=#{tactic} level=#{threat.threat_level.round(2)}")
                 threat
               end
 
@@ -45,7 +47,7 @@ module Legion
                 return { success: false, reason: 'not found' } unless threat
 
                 threat.quarantine!
-                Legion::Logging.info "[cognitive_immunology] quarantined: id=#{threat_id} tactic=#{threat.tactic}"
+                log.info("[cognitive_immunology] quarantined: id=#{threat_id} tactic=#{threat.tactic}")
                 { success: true, threat_id: threat_id }
               end
 
@@ -54,7 +56,7 @@ module Legion
                 return { success: false, reason: 'not found' } unless threat
 
                 threat.release!
-                Legion::Logging.debug "[cognitive_immunology] released: id=#{threat_id}"
+                log.debug("[cognitive_immunology] released: id=#{threat_id}")
                 { success: true, threat_id: threat_id }
               end
 
@@ -65,7 +67,7 @@ module Legion
                 threat.expose!
                 boost = (Constants::RESISTANCE_BOOST / (threat.exposure_count + 1)).round(10)
                 @resistance = (@resistance + boost).clamp(0.0, 1.0).round(10)
-                Legion::Logging.debug "[cognitive_immunology] inoculate: id=#{threat_id} exposure=#{threat.exposure_count} resistance=#{@resistance.round(2)}"
+                log.debug("[cognitive_immunology] inoculate: id=#{threat_id} exposure=#{threat.exposure_count} resistance=#{@resistance.round(2)}")
                 { success: true, threat_id: threat_id, exposure_count: threat.exposure_count, resistance: @resistance }
               end
 
@@ -76,7 +78,7 @@ module Legion
 
                 ab = Antibody.new(tactic: tactic, pattern: pattern, strength: strength)
                 @antibodies[ab.id] = ab
-                Legion::Logging.info "[cognitive_immunology] antibody created: id=#{ab.id} tactic=#{tactic} strength=#{strength}"
+                log.info("[cognitive_immunology] antibody created: id=#{ab.id} tactic=#{tactic} strength=#{strength}")
                 ab
               end
 
@@ -86,13 +88,13 @@ module Legion
 
               def trigger_inflammatory_response
                 @inflammatory = true
-                Legion::Logging.warn '[cognitive_immunology] inflammatory response triggered — heightened scrutiny mode'
+                log.warn('[cognitive_immunology] inflammatory response triggered — heightened scrutiny mode')
                 { inflammatory: true }
               end
 
               def resolve_inflammation
                 @inflammatory = false
-                Legion::Logging.info '[cognitive_immunology] inflammation resolved — returning to normal scrutiny'
+                log.info('[cognitive_immunology] inflammation resolved — returning to normal scrutiny')
                 { inflammatory: false }
               end
 
@@ -127,7 +129,7 @@ module Legion
               def decay_all
                 @antibodies.each_value(&:decay!)
                 @resistance = (@resistance - Constants::RESISTANCE_DECAY).clamp(0.0, 1.0).round(10)
-                Legion::Logging.debug "[cognitive_immunology] decay cycle: resistance=#{@resistance.round(2)} antibodies=#{@antibodies.size}"
+                log.debug("[cognitive_immunology] decay cycle: resistance=#{@resistance.round(2)} antibodies=#{@antibodies.size}")
                 { resistance: @resistance, antibodies_decayed: @antibodies.size }
               end
 
@@ -135,7 +137,7 @@ module Legion
                 before = @antibodies.size
                 @antibodies.select! { |_, ab| ab.effective? }
                 pruned = before - @antibodies.size
-                Legion::Logging.debug "[cognitive_immunology] pruned #{pruned} ineffective antibodies"
+                log.debug("[cognitive_immunology] pruned #{pruned} ineffective antibodies")
                 { pruned: pruned, remaining: @antibodies.size }
               end
 

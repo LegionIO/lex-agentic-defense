@@ -20,10 +20,10 @@ module Legion
                   depth:            depth,
                   capture_radius:   capture_radius
                 )
-                Legion::Logging.info "[cognitive_whirlpool] created vortex id=#{vortex.vortex_id} type=#{vortex_type}"
+                log.info("[cognitive_whirlpool] created vortex id=#{vortex.vortex_id} type=#{vortex_type}")
                 { success: true, vortex: vortex.to_h }
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_whirlpool] create_vortex failed: #{e.message}"
+                log.warn("[cognitive_whirlpool] create_vortex failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
@@ -36,70 +36,70 @@ module Legion
                   domain:             domain,
                   distance_from_core: distance_from_core
                 )
-                Legion::Logging.info "[cognitive_whirlpool] injected thought=#{result[:thought_id]} into vortex=#{vortex_id}"
+                log.info("[cognitive_whirlpool] injected thought=#{result[:thought_id]} into vortex=#{vortex_id}")
                 result.merge(success: true)
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_whirlpool] inject_thought failed: #{e.message}"
+                log.warn("[cognitive_whirlpool] inject_thought failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
               def tick_all(spiral_rate: nil, engine: nil, **)
                 eng = engine || default_engine
                 result = eng.tick_all!(spiral_rate: spiral_rate)
-                Legion::Logging.debug "[cognitive_whirlpool] tick: vortices=#{result[:ticked]}"
+                log.debug("[cognitive_whirlpool] tick: vortices=#{result[:ticked]}")
                 result.merge(success: true)
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_whirlpool] tick_all failed: #{e.message}"
+                log.warn("[cognitive_whirlpool] tick_all failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
               def dissipate_all(rate: Helpers::Constants::VELOCITY_DECAY, engine: nil, **)
                 eng = engine || default_engine
                 result = eng.dissipate_all!(rate: rate)
-                Legion::Logging.debug "[cognitive_whirlpool] dissipate: removed=#{result[:dissipated]} remaining=#{result[:remaining]}"
+                log.debug("[cognitive_whirlpool] dissipate: removed=#{result[:dissipated]} remaining=#{result[:remaining]}")
                 result.merge(success: true)
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_whirlpool] dissipate_all failed: #{e.message}"
+                log.warn("[cognitive_whirlpool] dissipate_all failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
               def vortex_report(engine: nil, **)
                 eng = engine || default_engine
                 report = eng.vortex_report
-                Legion::Logging.debug "[cognitive_whirlpool] report: vortices=#{report[:total_vortices]}"
+                log.debug("[cognitive_whirlpool] report: vortices=#{report[:total_vortices]}")
                 report.merge(success: true)
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_whirlpool] vortex_report failed: #{e.message}"
+                log.warn("[cognitive_whirlpool] vortex_report failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
               def deepest_vortices(limit: 3, engine: nil, **)
                 eng = engine || default_engine
                 vortices = eng.deepest_vortices(limit: limit)
-                Legion::Logging.debug "[cognitive_whirlpool] deepest: count=#{vortices.size}"
+                log.debug("[cognitive_whirlpool] deepest: count=#{vortices.size}")
                 { success: true, vortices: vortices }
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_whirlpool] deepest_vortices failed: #{e.message}"
+                log.warn("[cognitive_whirlpool] deepest_vortices failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
               def remove_vortex(vortex_id:, engine: nil, **)
                 eng = engine || default_engine
                 result = eng.remove_vortex(vortex_id)
-                Legion::Logging.debug "[cognitive_whirlpool] removed vortex=#{vortex_id}"
+                log.debug("[cognitive_whirlpool] removed vortex=#{vortex_id}")
                 result.merge(success: true)
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_whirlpool] remove_vortex failed: #{e.message}"
+                log.warn("[cognitive_whirlpool] remove_vortex failed: #{e.message}")
                 { success: false, error: e.message }
               end
 
               def clear_engine(engine: nil, **)
                 eng = engine || default_engine
                 result = eng.clear
-                Legion::Logging.info '[cognitive_whirlpool] engine cleared'
+                log.info('[cognitive_whirlpool] engine cleared')
                 result.merge(success: true)
               rescue ArgumentError => e
-                Legion::Logging.warn "[cognitive_whirlpool] clear_engine failed: #{e.message}"
+                log.warn("[cognitive_whirlpool] clear_engine failed: #{e.message}")
                 { success: false, error: e.message }
               end
 

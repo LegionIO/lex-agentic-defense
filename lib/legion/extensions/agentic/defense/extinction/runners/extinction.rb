@@ -7,20 +7,20 @@ module Legion
         module Extinction
           module Runners
             module Extinction
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def escalate(level:, authority:, reason:, **)
                 result = protocol_state.escalate(level, authority: authority, reason: reason)
                 case result
                 when :escalated
                   info = Helpers::Levels.level_info(level)
-                  Legion::Logging.warn "[extinction] ESCALATED: level=#{level} name=#{info[:name]} authority=#{authority} reason=#{reason}"
+                  log.warn("[extinction] ESCALATED: level=#{level} name=#{info[:name]} authority=#{authority} reason=#{reason}")
                   enforce_escalation_effects(level)
                   emit_escalation_event(level, authority, reason)
                   { escalated: true, level: level, info: info }
                 else
-                  Legion::Logging.debug "[extinction] escalation denied: level=#{level} reason=#{result}"
+                  log.debug("[extinction] escalation denied: level=#{level} reason=#{result}")
                   { escalated: false, reason: result }
                 end
               end
@@ -29,17 +29,17 @@ module Legion
                 result = protocol_state.deescalate(target_level, authority: authority, reason: reason)
                 case result
                 when :deescalated
-                  Legion::Logging.info "[extinction] de-escalated: target=#{target_level} authority=#{authority} reason=#{reason}"
+                  log.info("[extinction] de-escalated: target=#{target_level} authority=#{authority} reason=#{reason}")
                   { deescalated: true, level: target_level }
                 else
-                  Legion::Logging.debug "[extinction] de-escalation denied: target=#{target_level} reason=#{result}"
+                  log.debug("[extinction] de-escalation denied: target=#{target_level} reason=#{result}")
                   { deescalated: false, reason: result }
                 end
               end
 
               def extinction_status(**)
                 status = protocol_state.to_h
-                Legion::Logging.debug "[extinction] status: level=#{status[:current_level]} active=#{status[:active]}"
+                log.debug("[extinction] status: level=#{status[:current_level]} active=#{status[:active]}")
                 status
               end
 
@@ -48,10 +48,10 @@ module Legion
                 level = status[:current_level]
 
                 if level.positive?
-                  Legion::Logging.warn "[extinction] ACTIVE: level=#{level} active=#{status[:active]}"
+                  log.warn("[extinction] ACTIVE: level=#{level} active=#{status[:active]}")
                   detect_stale_escalation(level)
                 else
-                  Legion::Logging.debug '[extinction] status: level=0 active=false'
+                  log.debug('[extinction] status: level=0 active=false')
                 end
 
                 status
@@ -59,7 +59,7 @@ module Legion
 
               def check_reversibility(level:, **)
                 reversible = Helpers::Levels.reversible?(level)
-                Legion::Logging.debug "[extinction] reversibility: level=#{level} reversible=#{reversible}"
+                log.debug("[extinction] reversibility: level=#{level} reversible=#{reversible}")
                 {
                   level:      level,
                   reversible: reversible,
@@ -74,14 +74,14 @@ module Legion
               def enforce_escalation_effects(level)
                 if level >= 1 && defined?(Legion::Extensions::Mesh::Runners::Mesh)
                   Legion::Extensions::Mesh::Runners::Mesh.disconnect rescue nil # rubocop:disable Style/RescueModifier
-                  Legion::Logging.warn '[extinction] mesh isolation enforced'
+                  log.warn('[extinction] mesh isolation enforced')
                 end
 
                 return unless level == 4
 
                 if defined?(Legion::Extensions::Privatecore::Runners::Privatecore)
                   Legion::Extensions::Privatecore::Runners::Privatecore.erase_all rescue nil # rubocop:disable Style/RescueModifier
-                  Legion::Logging.warn '[extinction] cryptographic erasure triggered'
+                  log.warn('[extinction] cryptographic erasure triggered')
                 end
 
                 if defined?(Legion::Data::Model::DigitalWorker)
@@ -89,10 +89,10 @@ module Legion
                     Legion::Data::Model::DigitalWorker.where(lifecycle_state: 'active').update(
                       lifecycle_state: 'terminated', updated_at: Time.now.utc
                     )
-                  rescue StandardError
+                  rescue StandardError => _e
                     nil
                   end
-                  Legion::Logging.warn '[extinction] all active workers terminated'
+                  log.warn('[extinction] all active workers terminated')
                 end
 
                 return unless defined?(Legion::Extensions::Apollo::Runners::Knowledge)
@@ -100,9 +100,9 @@ module Legion
                 begin
                   obj = Object.new.extend(Legion::Extensions::Apollo::Runners::Knowledge)
                   obj.handle_erasure_request(agent_id: 'system:extinction')
-                  Legion::Logging.warn '[extinction] apollo erasure propagated'
+                  log.warn('[extinction] apollo erasure propagated')
                 rescue StandardError => e
-                  Legion::Logging.error "[extinction] apollo erasure failed: #{e.message}"
+                  log.error("[extinction] apollo erasure failed: #{e.message}")
                 end
               end
 
@@ -116,10 +116,10 @@ module Legion
               end
 
               def detect_stale_escalation(level)
-                last_escalation = protocol_state.history.select { |h| h[:action] == :escalate }.last
+                last_escalation = protocol_state.history.reverse.find { |h| h[:action] == :escalate }
                 return unless last_escalation && (Time.now.utc - last_escalation[:at]) > STALE_ESCALATION_THRESHOLD
 
-                Legion::Logging.warn "[extinction] STALE: level=#{level} has been active > 24 hours"
+                log.warn("[extinction] STALE: level=#{level} has been active > 24 hours")
                 return unless defined?(Legion::Events)
 
                 Legion::Events.emit('extinction.stale_escalation', {
