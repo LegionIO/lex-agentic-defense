@@ -7,8 +7,8 @@ module Legion
         module Immunology
           module Runners
             module CognitiveImmunology
-              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers) &&
-                                                          Legion::Extensions::Helpers.const_defined?(:Lex)
+              include Legion::Extensions::Helpers::Lex if Legion::Extensions.const_defined?(:Helpers, false) &&
+                                                          Legion::Extensions::Helpers.const_defined?(:Lex, false)
 
               def detect_threat(source:, tactic:, content_hash:, threat_level: 0.5, **)
                 threat = engine.detect_threat(source: source, tactic: tactic, content_hash: content_hash, threat_level: threat_level)

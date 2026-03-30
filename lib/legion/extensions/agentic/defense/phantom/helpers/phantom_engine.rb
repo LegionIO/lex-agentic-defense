@@ -7,19 +7,21 @@ module Legion
         module Phantom
           module Helpers
             class PhantomEngine
+              include Legion::Extensions::Helpers::Lex
+
               def initialize
                 @phantoms = {}
               end
 
               def register_removal(capability_name:, capability_domain: :general)
                 if @phantoms.size >= Constants::MAX_PHANTOMS
-                  Legion::Logging.warn "[cognitive_phantom] MAX_PHANTOMS (#{Constants::MAX_PHANTOMS}) reached, skipping #{capability_name}"
+                  log.warn("[cognitive_phantom] MAX_PHANTOMS (#{Constants::MAX_PHANTOMS}) reached, skipping #{capability_name}")
                   return nil
                 end
 
                 limb = PhantomLimb.new(capability_name: capability_name, capability_domain: capability_domain)
                 @phantoms[limb.id] = limb
-                Legion::Logging.info "[cognitive_phantom] registered phantom: capability=#{capability_name} domain=#{capability_domain} id=#{limb.id[0..7]}"
+                log.info("[cognitive_phantom] registered phantom: capability=#{capability_name} domain=#{capability_domain} id=#{limb.id[0..7]}")
                 limb
               end
 
@@ -34,7 +36,7 @@ module Legion
 
                   fired << signal
                   intensity_str = limb.intensity.round(3).to_s
-                  Legion::Logging.debug "[cognitive_phantom] phantom fired: cap=#{limb.capability_name} trigger=#{signal.trigger_type} i=#{intensity_str}"
+                  log.debug("[cognitive_phantom] phantom fired: cap=#{limb.capability_name} trigger=#{signal.trigger_type} i=#{intensity_str}")
                 end
                 fired
               end
@@ -49,7 +51,7 @@ module Legion
                 return { acknowledged: false, reason: :not_found } unless limb
 
                 limb.adapt!
-                Legion::Logging.info "[cognitive_phantom] acknowledged phantom id=#{phantom_id[0..7]} intensity=#{limb.intensity.round(3)} state=#{limb.state}"
+                log.info("[cognitive_phantom] acknowledged phantom id=#{phantom_id[0..7]} intensity=#{limb.intensity.round(3)} state=#{limb.state}")
                 { acknowledged: true, phantom_id: phantom_id, state: limb.state, intensity: limb.intensity }
               end
 
@@ -87,7 +89,7 @@ module Legion
               def resolve_check!
                 newly_resolved = @phantoms.values.select(&:resolved?)
                 newly_resolved.each do |limb|
-                  Legion::Logging.info "[cognitive_phantom] resolved: capability=#{limb.capability_name} activations=#{limb.activation_count}"
+                  log.info("[cognitive_phantom] resolved: capability=#{limb.capability_name} activations=#{limb.activation_count}")
                 end
                 newly_resolved.size
               end

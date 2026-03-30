@@ -63,7 +63,7 @@ module Legion
               end
 
               def save_to_local
-                return unless defined?(Legion::Data::Local) && Legion::Data::Local.connected?
+                return unless defined?(Legion::Data::Local) && local_data_connected?
 
                 row = {
                   id:            1,
@@ -72,13 +72,13 @@ module Legion
                   history:       ::JSON.dump(@history.map { |h| h.merge(at: h[:at].to_s) }),
                   updated_at:    Time.now.utc
                 }
-                db = Legion::Data::Local.connection
+                db = local_data_connection
                 if db[:extinction_state].where(id: 1).any?
                   db[:extinction_state].where(id: 1).update(row.except(:id))
                 else
                   db[:extinction_state].insert(row)
                 end
-              rescue StandardError
+              rescue StandardError => _e
                 nil
               end
 
@@ -89,16 +89,16 @@ module Legion
               end
 
               def load_from_local
-                return unless defined?(Legion::Data::Local) && Legion::Data::Local.connected?
+                return unless defined?(Legion::Data::Local) && local_data_connected?
 
-                row = Legion::Data::Local.connection[:extinction_state].where(id: 1).first
+                row = local_data_connection[:extinction_state].where(id: 1).first
                 return unless row
 
                 db_level = row[:current_level].to_i
                 @current_level = [db_level, @current_level].max
                 @active = [true, 1].include?(row[:active])
                 @history = parse_history(row[:history])
-              rescue StandardError
+              rescue StandardError => _e
                 nil
               end
 
@@ -113,7 +113,7 @@ module Legion
                     at:        Time.parse(h[:at].to_s)
                   )
                 end
-              rescue StandardError
+              rescue StandardError => _e
                 []
               end
             end

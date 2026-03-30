@@ -33,7 +33,7 @@ module Legion
               }.freeze
 
               def self.label_for(table, value)
-                const_get(table).find { |range, _| range.cover?(value.clamp(0.0, 1.0)) }&.last || :unknown
+                const_get(table, false).find { |range, _| range.cover?(value.clamp(0.0, 1.0)) }&.last || :unknown
               end
             end
           end
