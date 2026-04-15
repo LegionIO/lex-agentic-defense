@@ -5,7 +5,7 @@ Domain consolidation gem for cognitive defense, immunity, and error management. 
 ## Overview
 
 **Gem**: `lex-agentic-defense`
-**Version**: 0.1.5
+**Version**: 0.1.8
 **Namespace**: `Legion::Extensions::Agentic::Defense`
 
 ## Sub-Modules
