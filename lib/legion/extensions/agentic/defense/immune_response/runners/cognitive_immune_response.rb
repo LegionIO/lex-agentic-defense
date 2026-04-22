@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# immune_response = reactive immune memory (antigen -> antibody matching).
+# Tracks encountered threats, builds antibodies through exposure, and decays
+# immunity over time. Contrast with immunology/ which handles proactive
+# threat detection and resistance building.
+
 module Legion
   module Extensions
     module Agentic

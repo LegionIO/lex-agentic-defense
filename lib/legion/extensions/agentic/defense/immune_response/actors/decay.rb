@@ -6,15 +6,15 @@ module Legion
   module Extensions
     module Agentic
       module Defense
-        module Confabulation
+        module ImmuneResponse
           module Actor
             class Decay < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
               def runner_class
-                Legion::Extensions::Agentic::Defense::Confabulation::Runners::Confabulation
+                Legion::Extensions::Agentic::Defense::ImmuneResponse::Runners::CognitiveImmuneResponse
               end
 
               def runner_function
-                'decay_claims'
+                'decay_all'
               end
 
               def time

@@ -6,15 +6,15 @@ module Legion
   module Extensions
     module Agentic
       module Defense
-        module Confabulation
+        module Dissonance
           module Actor
-            class Decay < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
+            class Update < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
               def runner_class
-                Legion::Extensions::Agentic::Defense::Confabulation::Runners::Confabulation
+                Legion::Extensions::Agentic::Defense::Dissonance::Runners::Dissonance
               end
 
               def runner_function
-                'decay_claims'
+                'update_dissonance'
               end
 
               def time

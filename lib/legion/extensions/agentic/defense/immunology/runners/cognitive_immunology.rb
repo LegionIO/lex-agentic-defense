@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# immunology = proactive threat detection and resistance building.
+# Scans for adversarial tactics, quarantines threats, creates defensive
+# antibodies, and manages inflammatory responses. Contrast with
+# immune_response/ which handles reactive antigen-antibody memory.
+
 module Legion
   module Extensions
     module Agentic
