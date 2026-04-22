@@ -99,6 +99,31 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Confabulation::Runners::Con
     end
   end
 
+  describe '#decay_claims' do
+    it 'removes unverified claims older than max_age_seconds' do
+      client.register_claim(content: 'stale claim', claim_type: :factual, confidence: 0.5, evidence_strength: 0.1)
+      result = client.decay_claims(max_age_seconds: -1)
+      expect(result).to have_key(:removed)
+      expect(result).to have_key(:remaining)
+      expect(result[:removed]).to eq(1)
+    end
+
+    it 'retains claims newer than max_age_seconds' do
+      client.register_claim(content: 'fresh claim', claim_type: :factual, confidence: 0.5, evidence_strength: 0.5)
+      result = client.decay_claims(max_age_seconds: 3600)
+      expect(result[:removed]).to eq(0)
+      expect(result[:remaining]).to eq(1)
+    end
+
+    it 'does not remove verified claims' do
+      claim = client.register_claim(content: 'verified claim', claim_type: :factual,
+                                    confidence: 0.6, evidence_strength: 0.6)
+      client.verify_claim(claim_id: claim[:id])
+      result = client.decay_claims(max_age_seconds: -1)
+      expect(result[:removed]).to eq(0)
+    end
+  end
+
   describe 'full cycle' do
     it 'registers, verifies, flags and reports correctly' do
       c1 = client.register_claim(content: 'valid fact', claim_type: :factual,

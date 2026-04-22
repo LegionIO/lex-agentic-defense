@@ -73,15 +73,23 @@ module Legion
 
               def enforce_escalation_effects(level)
                 if level >= 1 && defined?(Legion::Extensions::Mesh::Runners::Mesh)
-                  Legion::Extensions::Mesh::Runners::Mesh.disconnect rescue nil # rubocop:disable Style/RescueModifier
-                  log.warn('[extinction] mesh isolation enforced')
+                  begin
+                    Legion::Extensions::Mesh::Runners::Mesh.disconnect
+                    log.warn('[extinction] mesh isolation enforced')
+                  rescue StandardError => e
+                    log.error("[extinction] mesh isolation failed: #{e.message}")
+                  end
                 end
 
                 return unless level == 4
 
                 if defined?(Legion::Extensions::Privatecore::Runners::Privatecore)
-                  Legion::Extensions::Privatecore::Runners::Privatecore.erase_all rescue nil # rubocop:disable Style/RescueModifier
-                  log.warn('[extinction] cryptographic erasure triggered')
+                  begin
+                    Legion::Extensions::Privatecore::Runners::Privatecore.erase_all
+                    log.warn('[extinction] cryptographic erasure triggered')
+                  rescue StandardError => e
+                    log.error("[extinction] cryptographic erasure failed: #{e.message}")
+                  end
                 end
 
                 if defined?(Legion::Data::Model::DigitalWorker)
@@ -89,10 +97,10 @@ module Legion
                     Legion::Data::Model::DigitalWorker.where(lifecycle_state: 'active').update(
                       lifecycle_state: 'terminated', updated_at: Time.now.utc
                     )
-                  rescue StandardError => _e
-                    nil
+                    log.warn('[extinction] all active workers terminated')
+                  rescue StandardError => e
+                    log.error("[extinction] worker termination failed: #{e.message}")
                   end
-                  log.warn('[extinction] all active workers terminated')
                 end
 
                 return unless defined?(Legion::Extensions::Apollo::Runners::Knowledge)

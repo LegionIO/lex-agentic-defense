@@ -6,19 +6,19 @@ module Legion
   module Extensions
     module Agentic
       module Defense
-        module Confabulation
+        module Erosion
           module Actor
-            class Decay < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
+            class Weather < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
               def runner_class
-                Legion::Extensions::Agentic::Defense::Confabulation::Runners::Confabulation
+                Legion::Extensions::Agentic::Defense::Erosion::Runners::CognitiveErosion
               end
 
               def runner_function
-                'decay_claims'
+                'weather_all'
               end
 
               def time
-                300
+                600
               end
 
               def run_now?

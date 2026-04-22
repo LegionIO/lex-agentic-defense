@@ -6,19 +6,19 @@ module Legion
   module Extensions
     module Agentic
       module Defense
-        module Confabulation
+        module Whirlpool
           module Actor
-            class Decay < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
+            class Tick < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
               def runner_class
-                Legion::Extensions::Agentic::Defense::Confabulation::Runners::Confabulation
+                Legion::Extensions::Agentic::Defense::Whirlpool::Runners::CognitiveWhirlpool
               end
 
               def runner_function
-                'decay_claims'
+                'tick_all'
               end
 
               def time
-                300
+                60
               end
 
               def run_now?

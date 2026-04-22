@@ -60,6 +60,16 @@ module Legion
                 { engine: confabulation_engine.to_h }
               end
 
+              def decay_claims(max_age_seconds: 3600, **)
+                engine = confabulation_engine
+                before = engine.claims.size
+                cutoff = Time.now.utc - max_age_seconds
+                engine.claims.reject! { |_id, claim| !claim.verified && claim.created_at < cutoff }
+                removed = before - engine.claims.size
+                log.info("[confabulation] decay: removed=#{removed} remaining=#{engine.claims.size}")
+                { removed: removed, remaining: engine.claims.size }
+              end
+
               private
 
               def confabulation_engine
