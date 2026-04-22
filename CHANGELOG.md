@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9] - 2026-04-22
+### Fixed
+- Confabulation decay actor now calls `decay_claims` instead of read-only `confabulation_report`; added `decay_claims` method to age out stale unverified claims
+- Extinction `rescue nil` blocks replaced with `rescue StandardError => e` + `log.error`
+### Added
+- 6 new maintenance actors: ImmuneResponse::Decay (300s), Immunology::Decay (300s), Erosion::Weather (600s), Whirlpool::Tick (60s), Dissonance::Update (300s), Phantom::Decay (300s)
+
 ## [0.1.8] - 2026-04-15
 ### Changed
 - Set `mcp_tools?`, `mcp_tools_deferred?`, and `transport_required?` to `false` — internal cognitive pipeline extension
