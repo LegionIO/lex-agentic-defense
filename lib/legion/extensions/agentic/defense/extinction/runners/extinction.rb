@@ -103,6 +103,16 @@ module Legion
                   end
                 end
 
+                if defined?(Legion::Extensions::Apollo::Client)
+                  begin
+                    Legion::Extensions::Apollo::Client.new.handle_erasure_request(agent_id: 'system:extinction')
+                    log.warn('[extinction] apollo erasure propagated')
+                    return
+                  rescue StandardError => e
+                    log.error("[extinction] apollo erasure failed: #{e.message}")
+                  end
+                end
+
                 return unless defined?(Legion::Extensions::Apollo::Runners::Knowledge)
 
                 begin
