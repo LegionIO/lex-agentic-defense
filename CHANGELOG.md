@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.10] - 2026-05-07
+### Fixed
+- Extinction protocol authority checks now accept string authorities from JSON/API callers.
+- Extinction state persistence failures are logged and return false below level 4, while level 4 erasure state failures raise instead of being swallowed.
+- Level 4 Apollo erasure propagation now prefers the Apollo client when available.
+
 ## [0.1.9] - 2026-04-22
 ### Fixed
 - Confabulation decay actor now calls `decay_claims` instead of read-only `confabulation_report`; added `decay_claims` method to age out stale unverified claims

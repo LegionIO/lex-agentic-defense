@@ -21,6 +21,7 @@ module Legion
               end
 
               def escalate(level, authority:, reason:)
+                authority = authority.to_sym if authority.respond_to?(:to_sym)
                 return :invalid_level unless Levels.valid_level?(level)
                 return :already_at_or_above if level <= @current_level
                 return :insufficient_authority unless authority == Levels.required_authority(level)
@@ -37,6 +38,7 @@ module Legion
               end
 
               def deescalate(target_level, authority:, reason:)
+                authority = authority.to_sym if authority.respond_to?(:to_sym)
                 return :not_active unless @active
                 return :invalid_target if target_level >= @current_level
                 return :irreversible unless Levels.reversible?(@current_level)
@@ -63,7 +65,7 @@ module Legion
               end
 
               def save_to_local
-                return unless defined?(Legion::Data::Local) && local_data_connected?
+                return unless local_persistence_connected?
 
                 row = {
                   id:            1,
@@ -72,14 +74,18 @@ module Legion
                   history:       ::JSON.dump(@history.map { |h| h.merge(at: h[:at].to_s) }),
                   updated_at:    Time.now.utc
                 }
-                db = local_data_connection
+                db = local_persistence_connection
                 if db[:extinction_state].where(id: 1).any?
                   db[:extinction_state].where(id: 1).update(row.except(:id))
                 else
                   db[:extinction_state].insert(row)
                 end
-              rescue StandardError => _e
-                nil
+                true
+              rescue StandardError => e
+                log.error("lex-extinction: save_to_local failed: #{e.message}")
+                raise if @current_level >= 4
+
+                false
               end
 
               private
@@ -89,17 +95,19 @@ module Legion
               end
 
               def load_from_local
-                return unless defined?(Legion::Data::Local) && local_data_connected?
+                return unless local_persistence_connected?
 
-                row = local_data_connection[:extinction_state].where(id: 1).first
+                row = local_persistence_connection[:extinction_state].where(id: 1).first
                 return unless row
 
                 db_level = row[:current_level].to_i
                 @current_level = [db_level, @current_level].max
                 @active = [true, 1].include?(row[:active])
                 @history = parse_history(row[:history])
-              rescue StandardError => _e
-                nil
+                true
+              rescue StandardError => e
+                log.error("lex-extinction: load_from_local failed: #{e.message}")
+                false
               end
 
               def parse_history(raw)
@@ -115,6 +123,24 @@ module Legion
                 end
               rescue StandardError => _e
                 []
+              end
+
+              def local_persistence_connected?
+                local_data_connected?
+              rescue NoMethodError => e
+                log.debug("lex-extinction: local persistence availability unavailable: #{e.message}")
+                false
+              end
+
+              def local_persistence_connection
+                local_data_connection
+              rescue NoMethodError => e
+                log.debug("lex-extinction: local persistence connection unavailable: #{e.message}")
+                raise
+              end
+
+              def log
+                Legion::Logging
               end
             end
           end

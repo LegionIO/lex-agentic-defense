@@ -100,6 +100,25 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Extinction::Runners::Extinc
       result = client.escalate(level: 4, authority: :physical_keyholders, reason: 'final')
       expect(result[:escalated]).to be true
     end
+
+    it 'uses Apollo client when it is available for level 4 erasure' do
+      events = Module.new { def self.emit(*, **); end }
+      stub_const('Legion::Events', events)
+      pc_mod = Module.new { def self.erase_all; end }
+      stub_const('Legion::Extensions::Privatecore::Runners::Privatecore', pc_mod)
+
+      apollo_client = instance_double('Legion::Extensions::Apollo::Client')
+      apollo_class = class_double('Legion::Extensions::Apollo::Client', new: apollo_client)
+      stub_const('Legion::Extensions::Apollo::Client', apollo_class)
+      allow(apollo_client).to receive(:handle_erasure_request).and_return({ deleted: 1 })
+
+      client.escalate(level: 1, authority: :governance_council, reason: 's1')
+      client.escalate(level: 2, authority: :governance_council, reason: 's2')
+      client.escalate(level: 3, authority: :council_plus_executive, reason: 's3')
+      client.escalate(level: 4, authority: :physical_keyholders, reason: 'final')
+
+      expect(apollo_client).to have_received(:handle_erasure_request).with(agent_id: 'system:extinction')
+    end
   end
 
   describe '#monitor_protocol' do

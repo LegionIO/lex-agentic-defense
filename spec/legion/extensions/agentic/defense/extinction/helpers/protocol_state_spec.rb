@@ -78,6 +78,13 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Extinction::Helpers::Protoc
     end
 
     context 'with valid escalation' do
+      it 'accepts string authorities from JSON/API callers' do
+        result = state.escalate(1, authority: 'governance_council', reason: 'threat')
+
+        expect(result).to eq(:escalated)
+        expect(state.history.last[:authority]).to eq(:governance_council)
+      end
+
       it 'returns :escalated for level 1 with governance_council' do
         expect(state.escalate(1, authority: :governance_council, reason: 'threat')).to eq(:escalated)
       end
@@ -207,6 +214,11 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Extinction::Helpers::Protoc
         result = state.deescalate(0, authority: :council_plus_executive, reason: 'test')
         expect(result).to eq(:deescalated)
       end
+
+      it 'accepts string authority for deescalation' do
+        result = state.deescalate(0, authority: 'council_plus_executive', reason: 'test')
+        expect(result).to eq(:deescalated)
+      end
     end
 
     context 'with valid de-escalation' do
@@ -286,6 +298,26 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Extinction::Helpers::Protoc
     it 'reflects updated history_size after escalation' do
       state.escalate(1, authority: :governance_council, reason: 'test')
       expect(state.to_h[:history_size]).to eq(1)
+    end
+  end
+
+  describe '#save_to_local' do
+    it 'logs and returns false when persistence fails below level 4' do
+      state.instance_variable_set(:@current_level, 2)
+      allow(state).to receive(:local_data_connected?).and_return(true)
+      allow(state).to receive(:local_data_connection).and_raise(StandardError, 'disk full')
+
+      expect(Legion::Logging).to receive(:error).with(/save_to_local failed/)
+      expect(state.save_to_local).to be false
+    end
+
+    it 'raises when persistence fails for level 4 erasure state' do
+      state.instance_variable_set(:@current_level, 4)
+      allow(state).to receive(:local_data_connected?).and_return(true)
+      allow(state).to receive(:local_data_connection).and_raise(StandardError, 'disk full')
+      allow(Legion::Logging).to receive(:error)
+
+      expect { state.save_to_local }.to raise_error(StandardError, /disk full/)
     end
   end
 end
