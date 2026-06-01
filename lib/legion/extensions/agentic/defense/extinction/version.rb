@@ -5,7 +5,7 @@ module Legion
     module Agentic
       module Defense
         module Extinction
-          VERSION = '0.2.0'
+          VERSION = '0.1.0'
         end
       end
     end

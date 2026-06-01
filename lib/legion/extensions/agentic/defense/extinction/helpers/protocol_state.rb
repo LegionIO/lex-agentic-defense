@@ -67,19 +67,17 @@ module Legion
               def save_to_local
                 return unless local_persistence_connected?
 
-                row = {
-                  id:            1,
+                payload = {
                   current_level: @current_level,
                   active:        @active,
                   history:       ::JSON.dump(@history.map { |h| h.merge(at: h[:at].to_s) }),
                   updated_at:    Time.now.utc
                 }
                 db = local_persistence_connection
-                if db[:extinction_state].where(id: 1).any?
-                  db[:extinction_state].where(id: 1).update(row.except(:id))
-                else
-                  db[:extinction_state].insert(row)
-                end
+
+                # Atomic upsert — avoids check-then-act race condition
+                existing = db[:extinction_state].where(id: 1).update(payload)
+                db[:extinction_state].insert(id: 1, **payload) if existing.zero?
                 true
               rescue StandardError => e
                 log.error("lex-extinction: save_to_local failed: #{e.message}")
@@ -101,7 +99,7 @@ module Legion
                 return unless row
 
                 db_level = row[:current_level].to_i
-                @current_level = [db_level, @current_level].max
+                @current_level = db_level
                 @active = [true, 1].include?(row[:active])
                 @history = parse_history(row[:history])
                 true
@@ -121,7 +119,8 @@ module Legion
                     at:        Time.parse(h[:at].to_s)
                   )
                 end
-              rescue StandardError => _e
+              rescue StandardError => e
+                log.error("lex-extinction: parse_history failed: #{e.message}")
                 []
               end
 
