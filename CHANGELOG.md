@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.11] - 2026-06-01
+### Fixed
+- Extinction sub-module `VERSION` corrected from `0.2.0` to `0.1.0` — aligns with sibling sub-modules.
+- `ProtocolState#load_from_local` no longer uses `.max()` to reconcile in-memory vs. DB level, preventing silent reversion of de-escalation on restart.
+- `ProtocolState#save_to_local` now uses an atomic upsert (update-then-insert-if-zero) instead of a check-then-act pattern, eliminating a race condition.
+- `ProtocolState#parse_history` now logs errors instead of silently returning an empty array.
+
 ## [0.1.10] - 2026-05-07
 ### Fixed
 - Extinction protocol authority checks now accept string authorities from JSON/API callers.

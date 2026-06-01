@@ -116,11 +116,11 @@ module Legion
                 return unless defined?(Legion::Extensions::Apollo::Runners::Knowledge)
 
                 begin
-                  obj = Object.new.extend(Legion::Extensions::Apollo::Runners::Knowledge)
-                  obj.handle_erasure_request(agent_id: 'system:extinction')
-                  log.warn('[extinction] apollo erasure propagated')
+                  eraser = Object.new.tap { |o| o.extend(Legion::Extensions::Apollo::Runners::Knowledge) }
+                  eraser.handle_erasure_request(agent_id: 'system:extinction')
+                  log.warn('[extinction] apollo erasure propagated via runner fallback')
                 rescue StandardError => e
-                  log.error("[extinction] apollo erasure failed: #{e.message}")
+                  log.error("[extinction] apollo erasure fallback failed: #{e.message}")
                 end
               end
 
