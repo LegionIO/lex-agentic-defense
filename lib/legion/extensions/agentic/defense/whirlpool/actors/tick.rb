@@ -8,7 +8,7 @@ module Legion
       module Defense
         module Whirlpool
           module Actor
-            class Tick < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
+            class Tick < Legion::Extensions::Actors::Every
               def runner_class
                 Legion::Extensions::Agentic::Defense::Whirlpool::Runners::CognitiveWhirlpool
               end

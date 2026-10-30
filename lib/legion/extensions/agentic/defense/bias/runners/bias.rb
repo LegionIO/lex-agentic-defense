@@ -77,8 +77,7 @@ module Legion
 
                 mag = bias_detector.detect_anchoring(
                   current_value: ctx[:current_value],
-                  anchor_value:  anchor_value,
-                  domain:        domain
+                  anchor_value:  anchor_value
                 )
                 [build_bias_result(:anchoring, domain, mag, ctx)]
               end
@@ -88,8 +87,7 @@ module Legion
 
                 mag = bias_detector.detect_confirmation(
                   evidence_direction:   ctx[:evidence_direction],
-                  hypothesis_direction: ctx[:hypothesis_direction],
-                  domain:               domain
+                  hypothesis_direction: ctx[:hypothesis_direction]
                 )
                 [build_bias_result(:confirmation, domain, mag, ctx)]
               end
@@ -97,14 +95,14 @@ module Legion
               def detect_availability_bias(domain, ctx)
                 return [] unless ctx[:recent_events] # rubocop:disable Legion/Extension/RunnerReturnHash
 
-                mag = bias_detector.detect_availability(recent_events: ctx[:recent_events], domain: domain)
+                mag = bias_detector.detect_availability(recent_events: ctx[:recent_events])
                 [build_bias_result(:availability, domain, mag, ctx)]
               end
 
               def detect_recency_bias(domain, ctx)
                 return [] unless ctx[:data_points] # rubocop:disable Legion/Extension/RunnerReturnHash
 
-                mag = bias_detector.detect_recency(data_points: ctx[:data_points], domain: domain)
+                mag = bias_detector.detect_recency(data_points: ctx[:data_points])
                 [build_bias_result(:recency, domain, mag, ctx)]
               end
 
@@ -113,8 +111,7 @@ module Legion
 
                 mag = bias_detector.detect_sunk_cost(
                   invested:        ctx[:invested],
-                  expected_return: ctx[:expected_return],
-                  domain:          domain
+                  expected_return: ctx[:expected_return]
                 )
                 [build_bias_result(:sunk_cost, domain, mag, ctx)]
               end

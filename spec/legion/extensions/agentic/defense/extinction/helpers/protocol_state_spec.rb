@@ -179,6 +179,23 @@ RSpec.describe Legion::Extensions::Agentic::Defense::Extinction::Helpers::Protoc
       end
     end
 
+    context 'when the target is outside the containment level domain' do
+      before { state.escalate(2, authority: :governance_council, reason: 'setup') }
+
+      [-1, 0.5, nil, '0'].each do |target|
+        it "rejects #{target.inspect} without changing containment or history" do
+          history = state.history.dup
+
+          result = state.deescalate(target, authority: :governance_council, reason: 'invalid request')
+
+          expect(result).to eq(:invalid_target)
+          expect(state.current_level).to eq(2)
+          expect(state.active).to be true
+          expect(state.history).to eq(history)
+        end
+      end
+    end
+
     context 'when current level is irreversible (level 4)' do
       before do
         state.escalate(1, authority: :governance_council, reason: 's1')

@@ -8,7 +8,7 @@ module Legion
       module Defense
         module Erosion
           module Actor
-            class Weather < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
+            class Weather < Legion::Extensions::Actors::Every
               def runner_class
                 Legion::Extensions::Agentic::Defense::Erosion::Runners::CognitiveErosion
               end

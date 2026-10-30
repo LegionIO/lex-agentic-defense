@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.12] - 2026-10-29
+### Fixed
+- Reject negative, fractional, missing, and nonnumeric extinction de-escalation targets without releasing containment or mutating protocol history.
+
 ## [0.1.11] - 2026-06-01
 ### Fixed
 - Extinction sub-module `VERSION` corrected from `0.2.0` to `0.1.0` — aligns with sibling sub-modules.

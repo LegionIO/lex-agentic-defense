@@ -8,7 +8,7 @@ module Legion
       module Defense
         module Immunology
           module Actor
-            class Decay < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
+            class Decay < Legion::Extensions::Actors::Every
               def runner_class
                 Legion::Extensions::Agentic::Defense::Immunology::Runners::CognitiveImmunology
               end

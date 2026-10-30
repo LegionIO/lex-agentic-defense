@@ -8,7 +8,7 @@ module Legion
       module Defense
         module Dissonance
           module Actor
-            class Update < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
+            class Update < Legion::Extensions::Actors::Every
               def runner_class
                 Legion::Extensions::Agentic::Defense::Dissonance::Runners::Dissonance
               end

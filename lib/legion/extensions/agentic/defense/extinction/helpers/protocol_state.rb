@@ -40,7 +40,7 @@ module Legion
               def deescalate(target_level, authority:, reason:)
                 authority = authority.to_sym if authority.respond_to?(:to_sym)
                 return :not_active unless @active
-                return :invalid_target if target_level >= @current_level
+                return :invalid_target unless target_level.is_a?(Integer) && target_level >= 0 && target_level < @current_level
                 return :irreversible unless Levels.reversible?(@current_level)
                 return :insufficient_authority unless authority == Levels.required_authority(@current_level)
 
