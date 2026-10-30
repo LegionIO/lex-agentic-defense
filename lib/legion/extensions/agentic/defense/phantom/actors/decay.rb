@@ -8,7 +8,7 @@ module Legion
       module Defense
         module Phantom
           module Actor
-            class Decay < Legion::Extensions::Actors::Every # rubocop:disable Legion/Extension/EveryActorRequiresTime
+            class Decay < Legion::Extensions::Actors::Every
               def runner_class
                 Legion::Extensions::Agentic::Defense::Phantom::Runners::CognitivePhantom
               end
