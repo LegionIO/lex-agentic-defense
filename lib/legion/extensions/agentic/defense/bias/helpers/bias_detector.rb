@@ -13,7 +13,7 @@ module Legion
                 @susceptibility = Constants::BIAS_TYPES.to_h { |b| [b, Constants::DEFAULT_SUSCEPTIBILITY] }
               end
 
-              def detect_anchoring(current_value:, anchor_value:, domain: nil) # rubocop:disable Lint/UnusedMethodArgument
+              def detect_anchoring(current_value:, anchor_value:)
                 return 0.0 if anchor_value.nil? || anchor_value.zero?
 
                 distance = (current_value - anchor_value).abs.to_f / anchor_value.abs
@@ -23,7 +23,7 @@ module Legion
                 magnitude.clamp(0.0, 1.0)
               end
 
-              def detect_confirmation(evidence_direction:, hypothesis_direction:, domain: nil) # rubocop:disable Lint/UnusedMethodArgument
+              def detect_confirmation(evidence_direction:, hypothesis_direction:)
                 magnitude = if evidence_direction == hypothesis_direction
                               Constants::CONFIRMATION_WEIGHT * susceptibility_for(:confirmation)
                             else
@@ -33,7 +33,7 @@ module Legion
                 magnitude.clamp(0.0, 1.0)
               end
 
-              def detect_availability(recent_events:, domain: nil) # rubocop:disable Lint/UnusedMethodArgument
+              def detect_availability(recent_events:)
                 window    = Constants::AVAILABILITY_RECENCY_WINDOW
                 density   = [recent_events.size, window].min.to_f / window
                 magnitude = density * susceptibility_for(:availability)
@@ -41,7 +41,7 @@ module Legion
                 magnitude.clamp(0.0, 1.0)
               end
 
-              def detect_recency(data_points:, domain: nil) # rubocop:disable Lint/UnusedMethodArgument
+              def detect_recency(data_points:)
                 return 0.0 if data_points.size < 2
 
                 total = data_points.size
@@ -61,7 +61,7 @@ module Legion
                 magnitude.clamp(0.0, 1.0)
               end
 
-              def detect_sunk_cost(invested:, expected_return:, domain: nil) # rubocop:disable Lint/UnusedMethodArgument
+              def detect_sunk_cost(invested:, expected_return:)
                 return 0.0 if invested <= 0
 
                 ratio     = invested.to_f / (invested + expected_return.abs + 1.0)
